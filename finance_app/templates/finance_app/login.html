@@ -1,0 +1,101 @@
+{% extends 'finance_app/base.html' %} {% block content %}
+
+<div
+  class="min-vh-100 d-flex align-items-center justify-content-center py-5 auth-bg"
+>
+  <div
+    class="card border-0 shadow-lg rounded-4"
+    style="max-width: 420px; width: 100%"
+  >
+    <div class="card-body p-4 p-lg-5">
+      <!-- Header -->
+      <div class="text-center mb-4">
+        <div class="login-icon mb-3">🔐</div>
+        <h2 class="fw-bold mb-2">{{ ui.login }}</h2>
+        <p class="text-muted mb-0">Sign in to manage your personal finances</p>
+      </div>
+
+      <!-- Form -->
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="login-form">{{ form.as_p }}</div>
+
+        <button class="btn btn-primary w-100 py-2 rounded-3 fw-semibold mt-3">
+          {{ ui.login }}
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <p class="mt-4 text-center text-muted mb-0">
+        No account yet?
+        <a href="{% url 'register' %}" class="fw-semibold text-decoration-none">
+          {{ ui.register }}
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Background */
+  .auth-bg {
+    background: linear-gradient(135deg, #f0f4ff, #f9fbff);
+  }
+
+  /* Icon */
+  .login-icon {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+    font-size: 26px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Form styling */
+  .login-form p {
+    margin-bottom: 1rem;
+  }
+
+  .login-form label {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: block;
+    color: #333;
+  }
+
+  .login-form input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .login-form input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.15rem rgba(0, 0, 0, 0.1);
+    outline: none;
+  }
+
+  /* Error messages */
+  .login-form ul.errorlist {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0.5rem;
+    color: #dc3545;
+    font-size: 0.9rem;
+  }
+
+  /* Link hover */
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+{% endblock %}

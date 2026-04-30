@@ -1,0 +1,25 @@
+{% extends 'finance_app/base.html' %}
+{% block content %}
+<h2 class="fw-bold mb-4">Settings</h2>
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card"><div class="card-body">
+            <h5>Environment</h5>
+            <p>Configure the app in the <code>.env</code> file.</p>
+            <ul>
+                <li>GEMINI_API_KEY</li>
+                <li>PostgreSQL credentials</li>
+                <li>ALLOWED_HOSTS</li>
+                <li>DB_ENGINE (set <code>sqlite3</code> for local quick start)</li>
+            </ul>
+        </div></div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card"><div class="card-body">
+            <h5>Languages</h5>
+            <p>You can switch the interface between English and Khmer using the language menu in the sidebar.</p>
+            <p>AI responses also follow your selected language.</p>
+        </div></div>
+    </div>
+</div>
+{% endblock %}

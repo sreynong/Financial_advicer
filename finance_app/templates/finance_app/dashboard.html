@@ -1,0 +1,195 @@
+{% extends 'finance_app/base.html' %} {% block content %}
+<div class="hero-card mb-4">
+  <div>
+    <div class="text-uppercase small fw-semibold text-primary mb-2">
+      {{ ui.financial_overview }}
+    </div>
+    <h2 class="mb-2">Smart budgeting, reports, and Gemini-powered advice</h2>
+    <p class="mb-0 text-secondary">
+      Track spending, compare monthly trends, and view a simple 3-month
+      forecast.
+    </p>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card stat-card">
+      <div class="card-body">
+        <small>{{ ui.monthly_income }}</small>
+        <h3>${{ summary.monthly_income }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card">
+      <div class="card-body">
+        <small>{{ ui.monthly_expenses }}</small>
+        <h3>${{ summary.monthly_expenses }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card">
+      <div class="card-body">
+        <small>{{ ui.estimated_savings }}</small>
+        <h3>${{ summary.estimated_savings }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <div class="card mb-4">
+      <div class="card-header bg-white border-0 pb-0">
+        <strong>Monthly Trend</strong>
+      </div>
+      <div class="card-body">
+        <canvas id="trendChart" height="110"></canvas>
+      </div>
+    </div>
+    <div class="card mb-4">
+      <div class="card-header bg-white border-0 pb-0">
+        <strong>Spending by Category</strong>
+      </div>
+      <div class="card-body">
+        <canvas id="expenseChart" height="110"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-white border-0 pb-0">
+        <strong>Recent Transactions</strong>
+      </div>
+      <div class="card-body table-responsive">
+        <table class="table align-middle modern-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in recent_transactions %}
+            <tr>
+              <td>{{ item.transaction_date }}</td>
+              <td>{{ item.title }}</td>
+              <td>
+                <span
+                  class="badge {% if item.transaction_type == 'income' %}bg-success-subtle text-success-emphasis{% else %}bg-danger-subtle text-danger-emphasis{% endif %}"
+                  >{{ item.transaction_type }}</span
+                >
+              </td>
+              <td>{{ item.category }}</td>
+              <td>${{ item.amount }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center text-muted">
+                No transactions yet.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card mb-4">
+      <div class="card-header bg-white border-0 pb-0">
+        <strong>Add Transaction</strong>
+      </div>
+      <div class="card-body">
+        <form
+          method="post"
+          action="{% url 'add_transaction' %}"
+          class="form-stack"
+        >
+          {% csrf_token %} {{ transaction_form.as_p }}
+          <button class="btn btn-primary w-100" type="submit">
+            {{ ui.save_transaction }}
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="card mb-4">
+      <div class="card-header bg-white border-0 pb-0">
+        <strong>Add Budget</strong>
+      </div>
+      <div class="card-body">
+        <form method="post" action="{% url 'add_budget' %}" class="form-stack">
+          {% csrf_token %} {{ budget_form.as_p }}
+          <button class="btn btn-outline-primary w-100" type="submit">
+            {{ ui.save_budget }}
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="card mb-4">
+      <div class="card-header bg-white border-0 pb-0">
+        <strong>{{ ui.ask_ai }}</strong>
+      </div>
+      <div class="card-body">
+        <form id="aiAdviceForm" class="form-stack">
+          {% csrf_token %} {{ ai_form.as_p }}
+          <button class="btn btn-dark w-100" type="submit">
+            {{ ui.ask_ai }}
+          </button>
+        </form>
+        <div id="aiAdviceResult" class="mt-3 advice-box text-muted">
+          Your AI advice will appear here.
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-white border-0 pb-0">
+        <strong>{{ ui.forecast }}</strong>
+      </div>
+      <div class="card-body">
+        <canvas id="forecastChart" height="120"></canvas>
+        <div class="small text-muted mt-3">
+          Forecast is based on recent monthly averages and is intended as a
+          simple planning aid.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ category_breakdown|json_script:'category-data' }}
+{{ trend_data|json_script:'trend-data' }}
+{{ forecast_data|json_script:'forecast-data' }}
+{% endblock %}
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var categoryDataEl = document.getElementById("category-data");
+    var trendDataEl = document.getElementById("trend-data");
+    var forecastDataEl = document.getElementById("forecast-data");
+
+    var categoryData = categoryDataEl
+      ? JSON.parse(categoryDataEl.textContent)
+      : [];
+    var trendData = trendDataEl ? JSON.parse(trendDataEl.textContent) : [];
+    var forecastData = forecastDataEl
+      ? JSON.parse(forecastDataEl.textContent)
+      : [];
+
+    console.log("Dashboard chart data:", {
+      categoryData: categoryData,
+      trendData: trendData,
+      forecastData: forecastData,
+    });
+
+    window.renderExpenseChart(categoryData);
+    window.renderTrendChart(trendData);
+    window.renderForecastChart(forecastData);
+    window.bindAIAdviceForm("{% url 'ai_advice' %}");
+  });
+</script>
+{% endblock %}

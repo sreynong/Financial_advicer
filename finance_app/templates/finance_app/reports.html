@@ -1,0 +1,56 @@
+{% extends 'finance_app/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Reports</h2>
+        <p class="text-muted mb-0">View budgets, top spending categories, and forecast summary.</p>
+    </div>
+    <a href="/api/transactions/" class="btn btn-outline-dark">Open Transactions API</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card h-100"><div class="card-body">
+            <h5>Current Month</h5>
+            <p>Month: {{ summary.month }}</p>
+            <p>Income: ${{ summary.monthly_income }}</p>
+            <p>Expenses: ${{ summary.monthly_expenses }}</p>
+            <p>Savings: ${{ summary.estimated_savings }}</p>
+        </div></div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100"><div class="card-body">
+            <h5>Budgets</h5>
+            <ul class="mb-0">
+                {% for budget in budgets %}
+                <li>{{ budget.category }} - ${{ budget.monthly_limit }}</li>
+                {% empty %}
+                <li>No budgets set yet.</li>
+                {% endfor %}
+            </ul>
+        </div></div>
+    </div>
+    <div class="col-12">
+        <div class="card"><div class="card-body">
+            <h5 class="mb-3">Forecast Summary</h5>
+            <div class="table-responsive">
+                <table class="table modern-table">
+                    <thead><tr><th>Month</th><th>Predicted Income</th><th>Predicted Expense</th><th>Predicted Savings</th></tr></thead>
+                    <tbody>
+                    {% for row in forecast_data %}
+                        <tr>
+                            <td>{{ row.label }}</td>
+                            <td>${{ row.predicted_income }}</td>
+                            <td>${{ row.predicted_expense }}</td>
+                            <td>${{ row.predicted_savings }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted">Add more transactions to generate a forecast.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div></div>
+    </div>
+</div>
+{% endblock %}

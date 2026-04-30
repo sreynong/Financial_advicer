@@ -1,0 +1,94 @@
+{% extends 'finance_app/base.html' %} {% block content %}
+
+<div
+  class="min-vh-100 d-flex align-items-center justify-content-center bg-light py-5"
+>
+  <div
+    class="card shadow-lg border-0 rounded-4"
+    style="max-width: 480px; width: 100%"
+  >
+    <div class="card-body p-4 p-lg-5">
+      <div class="text-center mb-4">
+        <div
+          class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+          style="width: 64px; height: 64px; font-size: 28px"
+        >
+          💰
+        </div>
+
+        <h2 class="fw-bold mb-2">{{ ui.register }}</h2>
+        <p class="text-muted mb-0">
+          Create your account to start tracking income and expenses.
+        </p>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="register-form">{{ form.as_p }}</div>
+
+        <button
+          class="btn btn-primary w-100 py-2 fw-semibold rounded-3 mt-3"
+          type="submit"
+        >
+          {{ ui.register }}
+        </button>
+      </form>
+
+      <p class="mt-4 mb-0 text-center text-muted">
+        Already have an account?
+        <a href="{% url 'login' %}" class="fw-semibold text-decoration-none">
+          {{ ui.login }}
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .register-form p {
+    margin-bottom: 1rem;
+  }
+
+  .register-form label {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: block;
+    color: #333;
+  }
+
+  .register-form input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.75rem;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .register-form input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+  }
+
+  .register-form .helptext {
+    font-size: 0.85rem;
+    color: #6c757d;
+    display: block;
+    margin-top: 0.35rem;
+  }
+
+  .register-form ul.errorlist {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0.5rem;
+    color: #dc3545;
+    font-size: 0.9rem;
+  }
+
+  body {
+    background: linear-gradient(135deg, #eef4ff, #f8fbff);
+  }
+</style>
+
+{% endblock %}
